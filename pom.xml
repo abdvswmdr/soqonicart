@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>works.weave.microservices-demo</groupId>
-    <artifactId>carts</artifactId>
+    <groupId>com.soqoni</groupId>
+    <artifactId>soqonicart</artifactId>
     <packaging>jar</packaging>
 
-    <name>carts</name>
-    <description>Carts service for microservices-demo application</description>
+    <name>soqonicart</name>
+    <description>Carts service for Soqoni microservices platform</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>

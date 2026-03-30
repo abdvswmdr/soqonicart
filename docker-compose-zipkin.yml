@@ -1,9 +1,9 @@
 version: '2'
 
 services:
-  carts:
-    image: weaveworksdemos/carts
-    hostname: carts
+  soqonicart:
+    image: abdvswmdr/soqonicart
+    hostname: soqonicart
     restart: always
     cap_drop:
       - all
