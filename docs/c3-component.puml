@@ -1,0 +1,37 @@
+@startuml c3-carts-component
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+!define FONTAWESOME https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/master/font-awesome-5
+!include FONTAWESOME/layer_group.puml
+!include FONTAWESOME/cogs.puml
+!include FONTAWESOME/database.puml
+!include FONTAWESOME/heartbeat.puml
+!include <logos/java>
+!include <logos/spring>
+!include <logos/mongodb>
+
+LAYOUT_LEFT_RIGHT()
+LAYOUT_WITH_LEGEND()
+
+title soqonicart — Component Diagram
+
+Person(frontend, "soqonifrontend", "Calls cart API via HTTP with customerId session")
+System_Ext(cosmos, "Azure Cosmos DB (MongoDB API)", "Cart docs per customer", $sprite="mongodb")
+
+Container_Boundary(carts, "soqonicart (Java 17 / Spring Boot)") {
+    Component(health, "HealthController", "@RestController", "GET /health — returns HTTP 200\nUsed by Kubernetes liveness + readiness probes", $sprite="heartbeat")
+    Component(controller, "CartController", "@RestController", "REST endpoints:\nGET  /carts/{id}/items\nPOST /carts/{id}/items\nDELETE /carts/{id}/items/{itemId}", $sprite="layer_group")
+    Component(config, "AppConfig", "@Configuration / application.properties", "Reads MongoDB URI, ZIPKIN_HOST, ZIPKIN_ENABLED\nZipkin tracing disabled — pending API migration", $sprite="spring")
+    Component(service, "CartService", "@Service", "Business logic: add item, remove item, get cart\nMerges anonymous cart on customer login", $sprite="cogs")
+    Component(repo, "CartRepository", "Spring Data MongoDB", "Maps Cart to MongoDB collection\nNo manual BSON — uses @Document annotations\nDerives queries from method names", $sprite="database")
+}
+
+Rel(frontend, health, "GET /health", "HTTP")
+Rel(frontend, controller, "GET/POST/DELETE", "HTTP JSON")
+
+Rel(controller, service, "Delegates to")
+Rel_D(config, repo, "Provides URI")
+Rel(service, repo, "CRUD docs")
+
+Rel(repo, cosmos, "Wire protocol", "TLS")
+
+@enduml
