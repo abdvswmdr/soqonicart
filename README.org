@@ -52,7 +52,7 @@ curl http://localhost:8081/carts/customer-1/items
 ** Architecture
 
 #+attr_html: :width 900px :align center :alt "Cart service architecture"
-[[file:docs/c3-carts-component.png
+[[file:docs/c3-carts-component.png]]
 
 Requires a running MongoDB instance (default: ~carts-db:27017~).
 
