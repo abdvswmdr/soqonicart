@@ -1,55 +1,59 @@
 pipeline {
     agent any
+    environment {
+        IMAGE = "abdvswmdr/soqonicart"
+        TAG   = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
+    }
     stages {
-	stage('build') {
-	    steps {
-		echo 'this is the build job'
-		sh 'mvn compile'
-		sleep 4
-	    }
-	}
+        stage('build') {
+            steps {
+                sh 'mvn compile'
+            }
+        }
 
-	stage('test') {
-	    steps {
-		echo 'this is the test job'
-		sh 'mvn clean test'
-		sleep 9
-	    }
-	}
+        stage('test') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
 
-	stage('package') {
-	    steps {
-		echo 'this is the package job'
-		sh 'mvn package -DskipTests'
-		sleep 7
-		archiveArtifacts '**/target/*.jar'
-	    }
-	}
+        stage('package') {
+            steps {
+                sh 'mvn package -DskipTests'
+                archiveArtifacts '**/target/*.jar'
+            }
+        }
 
-	stage('docker') {
-	    steps {
-		withCredentials([usernamePassword(
-		    credentialsId: 'dockerhub-creds',
-		    usernameVariable: 'DOCKERHUB_USER',
-		    passwordVariable: 'DOCKERHUB_PASS'
-		)]) {
-		    sh '''
-                    docker build -t abdvswmdr/soqonicart:latest .
-                    echo "$DOCKERHUB_PASS" | docker login -u "$DOCKERHUB_USER" --password-stdin
-                    docker push abdvswmdr/soqonicart:latest
-                    '''
-		}
-	    }
-	}
-
+        stage('docker') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'dockerhub-creds',
+                    usernameVariable: 'DOCKERHUB_USER',
+                    passwordVariable: 'DOCKERHUB_PASS'
+                )]) {
+                    sh """
+                        docker build -t ${IMAGE}:${TAG} .
+                        echo "\$DOCKERHUB_PASS" | docker login -u "\$DOCKERHUB_USER" --password-stdin
+                        docker push ${IMAGE}:${TAG}
+                    """
+                    script {
+                        if (env.BRANCH_NAME == 'main') {
+                            sh """
+                                docker tag ${IMAGE}:${TAG} ${IMAGE}:latest
+                                docker push ${IMAGE}:latest
+                            """
+                        }
+                    }
+                }
+            }
+        }
     }
     tools {
-	maven 'Maven 3.6.3'
+        maven 'Maven 3.6.3'
     }
     post {
-	always {
-	    echo 'this pipeline has completed...'
-	}
-
+        always {
+            echo "Pipeline complete — image: ${IMAGE}:${TAG}"
+        }
     }
 }
