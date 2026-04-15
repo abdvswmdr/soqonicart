@@ -28,16 +28,16 @@ Java 17 / Spring Boot microservice providing the shopping cart API for the [[htt
 
 ** API
 
-| Endpoint | Method | Description |
-|---|---|---|
-| ~/carts/{customerId}~ | GET | Get cart for customer |
-| ~/carts/{customerId}~ | DELETE | Delete cart |
-| ~/carts/{customerId}/items~ | GET | List items in cart |
-| ~/carts/{customerId}/items~ | POST | Add item to cart |
-| ~/carts/{customerId}/items~ | DELETE | Remove all items |
-| ~/carts/{customerId}/items/{itemId}~ | GET | Get a specific item |
+| Endpoint                           | Method | Description            |
+|------------------------------------+--------+------------------------|
+| ~/carts/{customerId}~                | GET    | Get cart for customer  |
+| ~/carts/{customerId}~                | DELETE | Delete cart            |
+| ~/carts/{customerId}/items~          | GET    | List items in cart     |
+| ~/carts/{customerId}/items~          | POST   | Add item to cart       |
+| ~/carts/{customerId}/items~          | DELETE | Remove all items       |
+| ~/carts/{customerId}/items/{itemId}~ | GET    | Get a specific item    |
 | ~/carts/{customerId}/items/{itemId}~ | DELETE | Remove a specific item |
-| ~/carts/{customerId}/items/{itemId}~ | PATCH | Update item quantity |
+| ~/carts/{customerId}/items/{itemId}~ | PATCH  | Update item quantity   |
 
 #+BEGIN_SRC bash
 # Add an item to a cart
