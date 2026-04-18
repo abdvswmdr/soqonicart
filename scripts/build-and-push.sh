@@ -37,9 +37,14 @@ echo "==> Building $IMAGE:$TAG"
 docker build -t "$IMAGE:$TAG" "$REPO_ROOT"
 
 if [ "$LOCAL_ONLY" = true ]; then
-    echo "==> Loading image into minikube"
-    minikube image load "$IMAGE:$TAG"
+    echo "==> Loading image into minikube (overwrite)"
+    minikube image load --overwrite=true "$IMAGE:$TAG"
     patch_manifests
+    echo "==> Applying manifest"
+    kubectl apply -f "$K8S_DIR/carts.yaml"
+    echo "==> Restarting deployment to pick up new image"
+    kubectl rollout restart deployment/carts
+    kubectl rollout status deployment/carts
     exit 0
 fi
 
@@ -54,6 +59,6 @@ else
     echo "==> Not on main ($BRANCH) — skipping :latest"
 fi
 
+patch_manifests
 echo ""
-echo "Done. Update your k8s manifest:"
-echo "  soqoni-k8s/carts.yaml -> image: $IMAGE:$TAG"
+echo "Done. Apply with: kubectl apply -f $K8S_DIR/carts.yaml"
