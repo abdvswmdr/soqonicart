@@ -42,6 +42,8 @@ if [ "$LOCAL_ONLY" = true ]; then
     patch_manifests
     echo "==> Applying manifest"
     kubectl apply -f "$K8S_DIR/carts.yaml"
+    echo "==> Setting imagePullPolicy=Never for local image"
+    kubectl patch deployment carts -p '{"spec":{"template":{"spec":{"containers":[{"name":"carts","imagePullPolicy":"Never"}]}}}}'
     echo "==> Restarting deployment to pick up new image"
     kubectl rollout restart deployment/carts
     kubectl rollout status deployment/carts
